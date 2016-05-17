@@ -1588,7 +1588,7 @@ LOCAL_C_INCLUDES := $(INCLUDES)
 include $(BUILD_EXECUTABLE)
 endif
 
-ifeq ($(BOARD_WLAN_DEVICE),$(filter $(BOARD_WLAN_DEVICE),WILINK8))
+ifeq ($(BOARD_WLAN_DEVICE),$(filter $(BOARD_WLAN_DEVICE),WILINK8 RALINK))
 include $(CLEAR_VARS)
 LOCAL_MODULE := wpa_supplicant
 ifneq ($(BOARD_WPA_SUPPLICANT_PRIVATE_LIB_WLINK8),)
@@ -1678,19 +1678,9 @@ endif
 #include $(BUILD_EXECUTABLE)
 #
 ########################
-ifeq ($(WPA_SUPPLICANT_VERSION),$(filter $(WPA_SUPPLICANT_VERSION),VER_0_8_UNITE))
+ifeq ($(WPA_SUPPLICANT_VERSION),$(filter $(WPA_SUPPLICANT_VERSION),VER_0_8_UNITE VER_0_8_X))
 local_target_dir := $(TARGET_OUT)/etc/wifi
 
-include $(CLEAR_VARS)
-LOCAL_MODULE := wpa_supplicant.conf
-LOCAL_MODULE_CLASS := ETC
-LOCAL_MODULE_PATH := $(local_target_dir)
-LOCAL_SRC_FILES := $(LOCAL_MODULE)
-include $(BUILD_PREBUILT)
-endif
-
-ifeq ($(WPA_SUPPLICANT_VERSION),$(filter $(WPA_SUPPLICANT_VERSION),VER_0_8_X))
-local_target_dir := $(TARGET_OUT)/etc/wifi
 include $(CLEAR_VARS)
 LOCAL_MODULE := wpa_supplicant.conf
 LOCAL_MODULE_CLASS := ETC
