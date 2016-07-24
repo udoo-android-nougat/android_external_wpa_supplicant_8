@@ -578,7 +578,7 @@ static int wpas_ctrl_iface_open_sock(struct wpa_supplicant *wpa_s,
 
 	/* Make sure the group can enter and read the directory */
 	if (gid_set &&
-	    chmod(dir, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP) < 0) {
+	    chmod(dir, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP) < 0) {
 		wpa_printf(MSG_ERROR, "CTRL: chmod[ctrl_interface]: %s",
 			   strerror(errno));
 		goto fail;
