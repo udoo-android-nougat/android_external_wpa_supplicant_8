@@ -1558,11 +1558,39 @@ LOCAL_C_INCLUDES := $(INCLUDES)
 include $(BUILD_EXECUTABLE)
 
 ########################
+
+
+######################
+# UDOO Wi-Fi modules #
+#####################
+
+# UDOO Quad/Dual
+
 ifeq ($(BOARD_WLAN_DEVICE),$(filter $(BOARD_WLAN_DEVICE),rt5370))
 include $(CLEAR_VARS)
 LOCAL_MODULE := wpa_supplicant
+
 ifneq ($(BOARD_WPA_SUPPLICANT_PRIVATE_LIB_RALINK),)
 LOCAL_STATIC_LIBRARIES += $(BOARD_WPA_SUPPLICANT_PRIVATE_LIB_RALINK)
+endif
+
+ifdef CONFIG_DRIVER_CUSTOM
+LOCAL_STATIC_LIBRARIES := libCustomWifi
+endif
+
+LOCAL_SHARED_LIBRARIES := libc libcutils liblog
+ifdef CONFIG_EAP_PROXY
+LOCAL_STATIC_LIBRARIES += $(LIB_STATIC_EAP_PROXY)
+LOCAL_SHARED_LIBRARIES += $(LIB_SHARED_EAP_PROXY)
+endif
+
+# UDOO Neo
+
+ifeq ($(BOARD_WLAN_DEVICE),$(filter $(BOARD_WLAN_DEVICE),WILINK8))
+include $(CLEAR_VARS)
+LOCAL_MODULE := wpa_supplicant
+ifneq ($(BOARD_WPA_SUPPLICANT_PRIVATE_LIB_WLINK8),)
+LOCAL_STATIC_LIBRARIES += $(BOARD_WPA_SUPPLICANT_PRIVATE_LIB_WLINK8)
 endif
 ifdef CONFIG_DRIVER_CUSTOM
 LOCAL_STATIC_LIBRARIES := libCustomWifi
@@ -1572,6 +1600,9 @@ ifdef CONFIG_EAP_PROXY
 LOCAL_STATIC_LIBRARIES += $(LIB_STATIC_EAP_PROXY)
 LOCAL_SHARED_LIBRARIES += $(LIB_SHARED_EAP_PROXY)
 endif
+
+
+
 ifeq ($(CONFIG_TLS), openssl)
 LOCAL_SHARED_LIBRARIES += libcrypto libssl libkeystore_binder
 endif
@@ -1586,24 +1617,6 @@ LOCAL_CFLAGS := $(L_CFLAGS)
 LOCAL_SRC_FILES := $(OBJS)
 LOCAL_C_INCLUDES := $(INCLUDES)
 include $(BUILD_EXECUTABLE)
-endif
-
-ifeq ($(BOARD_WLAN_DEVICE),$(filter $(BOARD_WLAN_DEVICE),WILINK8 RALINK))
-include $(CLEAR_VARS)
-LOCAL_MODULE := wpa_supplicant
-ifneq ($(BOARD_WPA_SUPPLICANT_PRIVATE_LIB_WLINK8),)
-LOCAL_STATIC_LIBRARIES += $(BOARD_WPA_SUPPLICANT_PRIVATE_LIB_WLINK8)
-endif
-ifdef CONFIG_DRIVER_CUSTOM
-LOCAL_STATIC_LIBRARIES := libCustomWifi
-endif
-LOCAL_SHARED_LIBRARIES := libc libcutils liblog
-ifdef CONFIG_EAP_PROXY
-LOCAL_STATIC_LIBRARIES += $(LIB_STATIC_EAP_PROXY)
-LOCAL_SHARED_LIBRARIES += $(LIB_SHARED_EAP_PROXY)
-endif
-ifeq ($(CONFIG_TLS), openssl)
-LOCAL_SHARED_LIBRARIES += libcrypto libssl libkeystore_binder
 endif
 
 # With BoringSSL we need libkeystore-engine in order to provide access to
