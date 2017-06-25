@@ -1559,39 +1559,12 @@ include $(BUILD_EXECUTABLE)
 
 ########################
 
-
-######################
-# UDOO Wi-Fi modules #
-#####################
-
-# UDOO Quad/Dual
-
-ifeq ($(BOARD_WLAN_DEVICE),$(filter $(BOARD_WLAN_DEVICE),rt5370))
+#
+# UDOO Dual/Quad
+#
+ifeq ($(BOARD_WLAN_DEVICE),$(filter $(BOARD_WLAN_DEVICE),RALINK))
 include $(CLEAR_VARS)
 LOCAL_MODULE := wpa_supplicant
-
-ifneq ($(BOARD_WPA_SUPPLICANT_PRIVATE_LIB_RALINK),)
-LOCAL_STATIC_LIBRARIES += $(BOARD_WPA_SUPPLICANT_PRIVATE_LIB_RALINK)
-endif
-
-ifdef CONFIG_DRIVER_CUSTOM
-LOCAL_STATIC_LIBRARIES := libCustomWifi
-endif
-
-LOCAL_SHARED_LIBRARIES := libc libcutils liblog
-ifdef CONFIG_EAP_PROXY
-LOCAL_STATIC_LIBRARIES += $(LIB_STATIC_EAP_PROXY)
-LOCAL_SHARED_LIBRARIES += $(LIB_SHARED_EAP_PROXY)
-endif
-
-# UDOO Neo
-
-ifeq ($(BOARD_WLAN_DEVICE),$(filter $(BOARD_WLAN_DEVICE),WILINK8))
-include $(CLEAR_VARS)
-LOCAL_MODULE := wpa_supplicant
-ifneq ($(BOARD_WPA_SUPPLICANT_PRIVATE_LIB_WLINK8),)
-LOCAL_STATIC_LIBRARIES += $(BOARD_WPA_SUPPLICANT_PRIVATE_LIB_WLINK8)
-endif
 ifdef CONFIG_DRIVER_CUSTOM
 LOCAL_STATIC_LIBRARIES := libCustomWifi
 endif
@@ -1600,11 +1573,13 @@ ifdef CONFIG_EAP_PROXY
 LOCAL_STATIC_LIBRARIES += $(LIB_STATIC_EAP_PROXY)
 LOCAL_SHARED_LIBRARIES += $(LIB_SHARED_EAP_PROXY)
 endif
-
-
-
 ifeq ($(CONFIG_TLS), openssl)
 LOCAL_SHARED_LIBRARIES += libcrypto libssl libkeystore_binder
+endif
+# With BoringSSL we need libkeystore-engine in order to provide access to
+# keystore keys.
+ifneq (,$(wildcard external/boringssl/flavor.mk))
+LOCAL_SHARED_LIBRARIES += libkeystore-engine
 endif
 ifdef CONFIG_DRIVER_NL80211
 ifneq ($(wildcard external/libnl),)
@@ -1619,12 +1594,28 @@ LOCAL_C_INCLUDES := $(INCLUDES)
 include $(BUILD_EXECUTABLE)
 endif
 
+#
+# UDOO NEO
+#
+ifeq ($(BOARD_WLAN_DEVICE),$(filter $(BOARD_WLAN_DEVICE),WILINK8))
+include $(CLEAR_VARS)
+LOCAL_MODULE := wpa_supplicant
+ifdef CONFIG_DRIVER_CUSTOM
+LOCAL_STATIC_LIBRARIES := libCustomWifi
+endif
+LOCAL_SHARED_LIBRARIES := libc libcutils liblog
+ifdef CONFIG_EAP_PROXY
+LOCAL_STATIC_LIBRARIES += $(LIB_STATIC_EAP_PROXY)
+LOCAL_SHARED_LIBRARIES += $(LIB_SHARED_EAP_PROXY)
+endif
+ifeq ($(CONFIG_TLS), openssl)
+LOCAL_SHARED_LIBRARIES += libcrypto libssl libkeystore_binder
+endif
 # With BoringSSL we need libkeystore-engine in order to provide access to
 # keystore keys.
 ifneq (,$(wildcard external/boringssl/flavor.mk))
 LOCAL_SHARED_LIBRARIES += libkeystore-engine
 endif
-
 ifdef CONFIG_DRIVER_NL80211
 ifneq ($(wildcard external/libnl),)
 LOCAL_SHARED_LIBRARIES += libnl
